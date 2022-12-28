@@ -27,7 +27,14 @@ async function run () {
             const post = req.body;
             // console.log( post );
             const result = await postsCollection.insertOne( post );
-            res.json( result );
+            res.send( result );
+        } );
+
+        // get posts
+        app.get( '/posts', async ( req, res ) => {
+            const posts = {}
+            const result = await postsCollection.find( posts ).toArray();
+            res.send( result );
         } );
 
         // post users
