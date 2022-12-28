@@ -21,13 +21,22 @@ async function run () {
     try {
         // const serviceCollection = client.db( 'TouristSpot' ).collection( 'services' )
         const postsCollection = client.db( 'socialAdda' ).collection( 'posts' )
+        const usersCollection = client.db( 'socialAdda' ).collection( 'users' )
 
         app.post( '/posts', async ( req, res ) => {
             const post = req.body;
-            console.log( post );
+            // console.log( post );
             const result = await postsCollection.insertOne( post );
             res.json( result );
         } );
+
+        // post users
+        app.post( '/users', async ( req, res ) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne( user );
+            res.send( result )
+        } )
+
     }
 
     finally {
