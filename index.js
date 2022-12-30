@@ -22,6 +22,7 @@ async function run () {
         // const serviceCollection = client.db( 'TouristSpot' ).collection( 'services' )
         const postsCollection = client.db( 'socialAdda' ).collection( 'posts' )
         const usersCollection = client.db( 'socialAdda' ).collection( 'users' )
+        const commentsCollection = client.db( 'socialAdda' ).collection( 'reacts' )
 
         app.post( '/posts', async ( req, res ) => {
             const post = req.body;
@@ -37,6 +38,30 @@ async function run () {
             res.send( result );
         } );
 
+        // post details
+        app.get( '/posts/:id', async ( req, res ) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId( id ) };
+            const post = await postsCollection.findOne( query )
+            res.send( post )
+        } )
+
+        // get comments
+        app.get( '/comments/:postId', async ( req, res ) => {
+            // console.log( req.params.postId );
+            const postId = req.params.postId
+            const result = await commentsCollection.find( { post: postId } ).toArray();
+            res.send( result )
+        } )
+
+        app.post( '/comments', async ( req, res ) => {
+            const comment = req.body;
+            const result = await commentsCollection.insertOne( comment );
+            res.send( result );
+            // console.log( comment )
+        } );
+
+
         // post users
         app.post( '/users', async ( req, res ) => {
             const user = req.body;
@@ -44,7 +69,14 @@ async function run () {
             res.send( result )
         } )
 
-        // get users
+        app.get( '/users', async ( req, res ) => {
+            const user = {}
+            const result = await usersCollection.find( user ).toArray();
+            res.send( result )
+        } )
+
+
+        // get specific users
         app.get( '/users/:email', async ( req, res ) => {
             const email = req.params.email;
             const query = { email: email };
@@ -71,7 +103,27 @@ async function run () {
                 }
             }
             const result = await usersCollection.updateOne( query, updatedUser, option )
-            res.send( user )
+            res.send( result )
+        } )
+
+        app.put( '/posts/:id', async ( req, res ) => {
+            const id = req.params.id;
+            // console.log( id )
+            const query = { _id: ObjectId( id ) }
+            const user = req.body;
+            console.log( user )
+            const option = { upsert: true }
+            // const updatedUser = {
+            //     $set: {
+            //         name: user.name,
+            //         email: user.email,
+            //         photoUrl: user.photoUrl,
+            //         institute: user.institute,
+            //         address: user.address
+            //     }
+            // }
+            // const result = await usersCollection.updateOne( query, updatedUser, option )
+            // res.send( result )
         } )
 
     }
